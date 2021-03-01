@@ -47,11 +47,9 @@ func (iter *Iterator) ValidForPrefix(prefix []byte) bool {
 	if C.rocksdb_iter_valid(iter.c) == 0 {
 		return false
 	}
-
-	key := iter.Key()
-	result := bytes.HasPrefix(key.Data(), prefix)
-	key.Free()
-	return result
+	// iter.Key().Free() is unnecessary here
+	// see comments: https://github.com/tecbot/gorocksdb/pull/65
+	return bytes.HasPrefix(iter.Key().Data(), prefix)
 }
 
 // Key returns the key the iterator currently holds.
