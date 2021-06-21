@@ -6,19 +6,22 @@ import "C"
 // FilterPolicy is a factory type that allows the RocksDB database to create a
 // filter, such as a bloom filter, which will used to reduce reads.
 type FilterPolicy interface {
-	// keys contains a list of keys (potentially with duplicates)
+	// CreateFilter keys contains a list of keys (potentially with duplicates)
 	// that are ordered according to the user supplied comparator.
 	CreateFilter(keys [][]byte) []byte
 
-	// "filter" contains the data appended by a preceding call to
+	// KeyMayMatch "filter" contains the data appended by a preceding call to
 	// CreateFilter(). This method must return true if
 	// the key was in the list of keys passed to CreateFilter().
 	// This method may return true or false if the key was not on the
 	// list, but it should aim to return false with a high probability.
 	KeyMayMatch(key []byte, filter []byte) bool
 
-	// Return the name of this policy.
+	// Name Return the name of this policy.
 	Name() string
+
+	// Destroy deallocates the FilterPolicy object.
+	Destroy()
 }
 
 // NewNativeFilterPolicy creates a FilterPolicy object.
@@ -33,6 +36,7 @@ type nativeFilterPolicy struct {
 func (fp nativeFilterPolicy) CreateFilter(keys [][]byte) []byte          { return nil }
 func (fp nativeFilterPolicy) KeyMayMatch(key []byte, filter []byte) bool { return false }
 func (fp nativeFilterPolicy) Name() string                               { return "" }
+func (fp nativeFilterPolicy) Destroy()                                   { C.rocksdb_filterpolicy_destroy(fp.c) }
 
 // NewBloomFilter returns a new filter policy that uses a bloom filter with approximately
 // the specified number of bits per key.  A good value for bits_per_key
