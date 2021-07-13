@@ -1,1 +1,1 @@
-module github.com/qieqieplus/gorocksdb/v5
+module github.com/qieqieplus/gorocksdb/v6

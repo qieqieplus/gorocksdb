@@ -59,6 +59,11 @@ func NewBloomFilterFull(bitsPerKey int) FilterPolicy {
 	return NewNativeFilterPolicy(C.rocksdb_filterpolicy_create_bloom_full(C.int(bitsPerKey)))
 }
 
+// NewRibbonFilter returns a new ribbon filter policy with bloom equivalent bits per key
+func NewRibbonFilter(bitsPerKey int) FilterPolicy {
+	return NewNativeFilterPolicy(C.rocksdb_filterpolicy_create_ribbon(C.int(bitsPerKey)))
+}
+
 // Hold references to filter policies.
 var filterPolicies = NewCOWList()
 
